@@ -1,7 +1,7 @@
 pragma solidity ^0.6.12;
 
-import './nft.sol';
-import './safemath.sol';
+import "./nft.sol";
+import "OpenZeppelin/openzeppelin-contracts@3.4.0/contracts/utils/math/SafeMath.sol";
 
 contract llama is NFT {
 
@@ -19,10 +19,11 @@ contract llama is NFT {
 
     Llama[] public llamas;
 
-    function _createLlama(string memory _name, uint256 _fatherId, uint256 _motherId) private returns(uint256) {
+    function _createLlama(string memory _name, uint256 _fatherId, uint256 _motherId) private returns(uint256, uint256) {
         uint256 id = llamas.push(Llama(_name, now, now, _fatherId, _motherId, 1)) - 1;
-        _nftowner[id] = msg.sender;
-        _nftbalance[msg.sender] = _nftbalance[msg.sender].add(1);
+        _mint(msg.sender, id);
+        _setTokenURI(id, 'https://game.example.gg/metadata.json');
+
         return(id);
     }
 

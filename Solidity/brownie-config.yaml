@@ -1,0 +1,6 @@
+solc:
+    version: 0.5.6
+    evm_version: null
+    optimize: true
+    runs: 200
+    minify_source: false
