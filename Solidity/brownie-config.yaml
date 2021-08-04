@@ -4,3 +4,5 @@ solc:
     optimize: true
     runs: 200
     minify_source: false
+dependencies:
+  OpenZeppelin/openzeppelin-contracts@3.4.0
