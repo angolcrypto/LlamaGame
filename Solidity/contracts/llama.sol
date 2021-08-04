@@ -19,12 +19,13 @@ contract llama is NFT {
     Llama[] public llamas;
 
     modifier onlyOwnerOf(uint256 _tokenId) {
-      require(_owners[_tokenId] == msg.sender);
+      require(ownerOf(_tokenId) == msg.sender);
       _;
     }
 
     function _createLlama(string memory _name, uint256 _fatherId, uint256 _motherId) private returns(uint256, uint256) {
-        uint256 id = llamas.push(Llama(_name, now, now, _fatherId, _motherId, 1)) - 1;
+        uint256 startLevel = 1;
+        uint256 id = llamas.push(Llama(_name, now, now, _fatherId, _motherId, startLevel)) - 1;
         _mint(msg.sender, id);
         _setTokenURI(id, 'https://game.example.gg/metadata.json');
 
@@ -47,7 +48,7 @@ contract llama is NFT {
     }
 
     function createFirstLlama() external returns(uint256) {
-        require(_balances[msg.sender] == 0);
+        require(balanceOf(msg.sender) == 0);
         return(_createLlama("Llama", 0, 0));
     }
 
