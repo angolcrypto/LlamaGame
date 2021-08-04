@@ -23,9 +23,10 @@ contract llama is NFT {
       _;
     }
 
-    function _createLlama(string memory _name, uint256 _fatherId, uint256 _motherId) private returns(uint256, uint256) {
+    function _createLlama(string memory _name, uint256 _fatherId, uint256 _motherId) private returns(uint256) {
         uint256 startLevel = 1;
-        uint256 id = llamas.push(Llama(_name, now, now, _fatherId, _motherId, startLevel)) - 1;
+        uint256 id = llamas.length;
+        llamas.push(Llama(_name, now, now, _fatherId, _motherId, startLevel));
         _mint(msg.sender, id);
         _setTokenURI(id, 'https://game.example.gg/metadata.json');
 
