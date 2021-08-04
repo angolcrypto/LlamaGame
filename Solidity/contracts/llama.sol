@@ -1,12 +1,11 @@
 pragma solidity ^0.6.12;
 
 import "./nft.sol";
-import "OpenZeppelin/openzeppelin-contracts@3.4.0/contracts/utils/math/SafeMath.sol";
+import "OpenZeppelin/openzeppelin-contracts@3.4.0/contracts/math/SafeMath.sol";
 
 contract llama is NFT {
 
     using SafeMath for uint256;
-    using SafeMath16 for uint16;
 
     struct Llama {
         string name;
@@ -14,10 +13,15 @@ contract llama is NFT {
         uint256 createdOn;
         uint256 fatherId;
         uint256 motherId;
-        uint16 level;
+        uint256 level;
     }
 
     Llama[] public llamas;
+
+    modifier onlyOwnerOf(uint256 _tokenId) {
+      require(_owners[_tokenId] == msg.sender);
+      _;
+    }
 
     function _createLlama(string memory _name, uint256 _fatherId, uint256 _motherId) private returns(uint256, uint256) {
         uint256 id = llamas.push(Llama(_name, now, now, _fatherId, _motherId, 1)) - 1;
@@ -27,7 +31,7 @@ contract llama is NFT {
         return(id);
     }
 
-    function _levelUp(uint256 _tokenId) private returns(uint16) {
+    function _levelUp(uint256 _tokenId) private returns(uint256) {
         llamas[_tokenId].level = llamas[_tokenId].level.add(1);
         return(llamas[_tokenId].level);
     }
@@ -43,7 +47,7 @@ contract llama is NFT {
     }
 
     function createFirstLlama() external returns(uint256) {
-        require(_nftbalance[msg.sender] == 0);
+        require(_balances[msg.sender] == 0);
         return(_createLlama("Llama", 0, 0));
     }
 
