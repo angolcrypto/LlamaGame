@@ -6,3 +6,5 @@ solc:
     minify_source: false
 dependencies:
   OpenZeppelin/openzeppelin-contracts@3.4.0
+dotenv:
+  .env
