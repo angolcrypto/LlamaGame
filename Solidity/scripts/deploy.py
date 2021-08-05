@@ -1,5 +1,5 @@
 from brownie import llama, accounts
 
 def main():
-    acct = accounts.load('deployment')
+    acct = accounts.load('deployment_account')
     llama.deploy({'from': acct})
