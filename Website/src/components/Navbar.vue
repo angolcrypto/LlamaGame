@@ -12,7 +12,7 @@
           </li>
         </ul>
         <form class="d-flex">
-          <button v-for='item in buttons' :key='item' class="btn btn-outline-primary" @click='redirect(item.link)' type="button">{{item.name}}</button>
+          <button v-for='item in buttons' :key='item' class="btn btn-outline-primary" @click='perform(item.function)' type="button">{{item.name}}</button>
         </form>
       </div>
     </div>
@@ -38,6 +38,20 @@ export default {
       } else {
         return
       }
+    },
+    perform(func) {
+      if(func == 'connectWallet') {
+        this.connectWallet();
+      }
+      else if (func == 'disconnectWallet') {
+        this.disconnectWallet();
+      }
+    },
+    connectWallet() {
+      this.$emit('connectWallet');
+    },
+    disconnectWallet() {
+      this.$emit('disconnectWallet');
     }
   },
   created() {

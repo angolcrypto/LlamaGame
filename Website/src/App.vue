@@ -1,12 +1,13 @@
 <template>
-  <div class='fullview'>
-    <Navbar :brand='brand' :pages='pages' :buttons='buttons' :darkmode='darkmode'/>
-    <router-view :user = 'user' :darkmode='darkmode' />
+  <div :class='["fullview", darkmode ? "darkmode" : "lightmode"]'>
+    <Navbar @connectWallet='connectWallet' :brand='brand' :pages='pages' :buttons='buttons' :darkmode='darkmode'/>
+    <router-view @feedLlama='feedLlama' :user = 'user' :darkmode='darkmode' />
   </div>
 </template>
 
 <script>
 import Navbar from '@/components/Navbar'
+import { ethers } from "ethers";
 
 export default {
   components: {
@@ -15,21 +16,48 @@ export default {
   data() {
     return {
       user: null,
-      brand: 'Forums',
-      buttons: [{ "name":"Login", "link":"/login" }],
-      pages: [{ "name":"Home", "link":"/" }, { "name":"Threads", "link":"/threads" }],
-      darkmode: false
+      brand: 'Llama Game',
+      buttons: [{ "name":"Connect Wallet", "function":"connectWallet" }],
+      pages: [],
+      darkmode: true
     }
   },
   created() {
     if(this.user !== null) {
-      this.buttons = [{ "name":"My Profile", "link":"/me" }]
+      this.buttons = []
+    }
+  },
+  methods: {
+    feedLlama() {
+      console.log('Fed Llama!');
+    },
+    async connectWallet() {
+      // const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      // this.user = accounts[0];
+      // this.buttons= [{ "name":"Disconnect Wallet", "function":"disconnectWallet" }];
+
+      await window.ethereum.send('eth_requestAccounts');
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+
+      console.log(await signer.getAddress());
+
+      this.buttons = [{"name":"Disconnect Wallet", "function":"disconnectWallet"}];
+    },
+    disconnectWallet() {
+      this.buttons = [{"name":"Connect Wallet", "function":"connectWallet"}];
     }
   }
 }
 </script>
 
 <style>
+
+.darkmode {
+  background: #2b2f33!important;
+  color: white;
+}
+
 a {
   cursor: pointer;
 }
