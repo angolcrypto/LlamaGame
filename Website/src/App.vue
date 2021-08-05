@@ -1,7 +1,7 @@
 <template>
   <div :class='["fullview", darkmode ? "darkmode" : "lightmode"]'>
-    <Navbar @connectWallet='connectWallet' :brand='brand' :pages='pages' :buttons='buttons' :darkmode='darkmode'/>
-    <router-view @feedLlama='feedLlama' :user = 'user' :darkmode='darkmode' />
+    <Navbar @disconnectWallet='disconnectWallet' @connectWallet='connectWallet' :brand='brand' :pages='pages' :buttons='buttons' :darkmode='darkmode'/>
+    <router-view @connectWallet='connectWallet' :locked='locked' @feedLlama='feedLlama' :signer = 'signer' :provider='provider' :darkmode='darkmode' />
   </div>
 </template>
 
@@ -15,16 +15,13 @@ export default {
   },
   data() {
     return {
-      user: null,
+      provider: null,
+      signer: null,
       brand: 'Llama Game',
       buttons: [{ "name":"Connect Wallet", "function":"connectWallet" }],
       pages: [],
-      darkmode: true
-    }
-  },
-  created() {
-    if(this.user !== null) {
-      this.buttons = []
+      darkmode: true,
+      locked: true
     }
   },
   methods: {
@@ -37,15 +34,17 @@ export default {
       // this.buttons= [{ "name":"Disconnect Wallet", "function":"disconnectWallet" }];
 
       await window.ethereum.send('eth_requestAccounts');
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner()
+      this.provider = new ethers.providers.Web3Provider(window.ethereum);
+      this.signer = this.provider.getSigner()
 
-      console.log(await signer.getAddress());
+      console.log(await this.signer.getAddress());
 
       this.buttons = [{"name":"Disconnect Wallet", "function":"disconnectWallet"}];
+      this.locked = false;
     },
     disconnectWallet() {
       this.buttons = [{"name":"Connect Wallet", "function":"connectWallet"}];
+      this.locked = true;
     }
   }
 }

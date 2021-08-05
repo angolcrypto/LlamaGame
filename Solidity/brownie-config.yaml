@@ -8,5 +8,3 @@ dependencies:
   OpenZeppelin/openzeppelin-contracts@3.4.0
 dotenv:
   .env
-gas_limit:
-  100000000000
