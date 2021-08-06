@@ -8,7 +8,7 @@
     <div v-if='llamaCount > 0' class='flex center' id='oldPlayers'>
       <h1>Welcome back! 🥳</h1>
       <h3>Your llamas missed you dearly.</h3>
-      <Llama :id='0' :provider='provider' :signer='signer' />
+      <Llama :for='lamma in lammas' :id='lamma' :provider='provider' :signer='signer' />
     </div>
   </div>
   <div v-if='locked' :class="['page', 'flex', 'center']">
@@ -33,13 +33,36 @@ export default {
   },
   data() {
     return {
-      llamaCount: 2,
+      llamaCount: 0,
+      llamas: [],
     }
   },
   methods: {
     feedLlama() {
-      this.$emit('feedLlama');ßß
+      this.$emit('feedLlama');
+    },
+  },
+  async created() {
+    const contractAddress = '0xc2Df94666757bEb8c16385eF0187112395649c9C';
+    const contractAbi = ["function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256 tokenId);","function balanceOf(address owner) external view returns (uint256 balance);","function getLlama(uint256 id) external view returns(string memory name, uint256 cooldownHunger, uint256 createdOn, uint256 fatherId, uint256 motherId, uint256 level)"]
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner()
+
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+
+    const address = await signer.getAddress();
+    const balance = JSON.parse(await contract.balanceOf(address));
+
+    console.log(address);
+    console.log(balance);
+
+    this.llamaCount = balance;
+
+    for (var i = 0; i < balance; i++) {
+      this.llamas.push(await contract.tokenOfOwnerByIndex(address, i));
     }
+
   }
 }
 </script>
