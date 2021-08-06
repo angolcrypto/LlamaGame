@@ -8,7 +8,7 @@
     <div v-if='llamaCount > 0' class='flex center' id='oldPlayers'>
       <h1>Welcome back! 🥳</h1>
       <h3>Your llamas missed you dearly.</h3>
-      <Llama :for='lamma in lammas' :id='lamma' :provider='provider' :signer='signer' />
+      <Llama :for='lamma in lammas' :id='lamma' />
     </div>
   </div>
   <div v-if='locked' :class="['page', 'flex', 'center']">
