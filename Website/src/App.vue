@@ -17,7 +17,7 @@ export default {
     return {
       provider: null,
       signer: null,
-      brand: 'Llama Game',
+      brand: 'Llama Farm 🦙',
       buttons: [{ "name":"Connect Wallet", "function":"connectWallet" }],
       pages: [],
       darkmode: true,
@@ -67,7 +67,7 @@ a {
 }
 
 .page {
-  margin: 16px 12px 10px 12px;
+  margin: 20px 20px 20px 20px;
 }
 
 .flex {

@@ -57,4 +57,30 @@ contract llama is NFT {
         _eatGrass(_tokenId);
     }
 
+    function getLlamas(address _address) external view returns(uint[] memory) {
+
+        uint256 count = 0;
+        uint256[] memory myLlamas;
+
+        for (uint i=0; i<llamas.length-1; i++) {
+          if(ownerOf(i) == _address) {
+            myLlamas[count] = i;
+            count++;
+          }
+        }
+
+        return myLlamas;
+    }
+
+    function getLlama(uint256 id) external view returns(string memory name, uint256 cooldownHunger, uint256 createdOn, uint256 fatherId, uint256 motherId, uint256 level) {
+      name = llamas[id].name;
+      cooldownHunger = llamas[id].cooldownHunger;
+      createdOn = llamas[id].createdOn;
+      fatherId = llamas[id].fatherId;
+      motherId = llamas[id].motherId;
+      level = llamas[id].level;
+
+      return(name, cooldownHunger, createdOn, fatherId, motherId, level);
+    }
+
 }
