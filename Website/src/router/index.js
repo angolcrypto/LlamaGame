@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import Home from '@/views/Home';
 import Connect from '@/views/Connect';
+import Success from '@/views/Success';
 
 const routes = [
     {
@@ -13,6 +14,11 @@ const routes = [
       path: '/',
       name: 'Connect Wallet',
       component: Connect
+    },
+    {
+      path: '/adopt/success',
+      name: 'Adoption Successful',
+      component: Success
     },
 ];
 

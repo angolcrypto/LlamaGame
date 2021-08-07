@@ -1,5 +1,5 @@
 <template>
-  <div class='box'>
+  <div id='box' class='box' style='margin-top: 7px; margin-bottom: 7px;'>
     <div class='image-side'>
       <img class='image' src='https://d1wo2tfj2enqpq.cloudfront.net/svgs/11.png' />
     </div>
@@ -7,19 +7,26 @@
       <h1>Llama #{{llamaId}}</h1>
       <h3>Name: {{llamaName}}</h3>
       <h3>Level: {{llamaLevel}}</h3>
+      <p style='display: inline-block;'>{{cooldownText}}</p>
       <br>
-      <button :class="llamaOnCooldown ? 'btn btn-secondary' : 'btn btn-primary'" @click='manageButton'>Feed</button>
-      <button class='btn btn-primary' style='margin-left: 7px;' @click='sendButton'>Transfer</button>
+      <button :class="llamaOnCooldown ? 'btn btn-secondary' : 'btn btn-primary'" :disabled='llamaOnCooldown' @click='feedButton'>Feed</button>
+      <button class='btn btn-primary' data-toggle="modal" data-target="#transferModal" style='margin-left: 7px;' @click='sendButton'>Transfer</button>
     </div>
   </div>
+  <TransferModal :id='llamaId'/>
 </template>
 
 <script>
+import TransferModal from '@/components/TransferModal.vue';
+
 import { ethers } from "ethers";
 
 export default {
   props: {
     ida: null,
+  },
+  components: {
+    TransferModal,
   },
   data() {
     return {
@@ -27,22 +34,34 @@ export default {
       llamaId: Number,
       llamaLevel: Number,
       llamaOnCooldown: Boolean,
+      cooldownText: String,
+      style: String,
     }
   },
   methods: {
-    manageButton() {
+    async feedButton() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner()
 
       const contractAddress = '0xc2Df94666757bEb8c16385eF0187112395649c9C';
-      const contractAbi = ["function feedMyLlama(uint256 _tokenId) external onlyOwnerOf(_tokenId)"];
+      const contractAbi = ["function feedMyLlama(uint256 _tokenId) external"];
 
       const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 
-      const tx = contract.
+      const tx = await contract.feedMyLlama(this.llamaId);
+      console.log(tx);
+      this.cooldownText = '6 hours remaining';
+      this.llamaOnCooldown = true;
+      this.llamaLevel = this.llamaLevel + 1;
     }
   },
-  async created() {
+  async mounted() {
+
+    // Unrelated to smart-contracts
+
+
+    // Smart Contract Stuff
+
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner()
 
@@ -66,10 +85,25 @@ export default {
     console.log(JSON.parse(llamaData.cooldownHunger));
     console.log(Date.now());
 
-    if(JSON.parse(llamaData.cooldownHunger) > Date.now()) {
+    const now = Date.now() / 1000; // Date.now() returns miliseconds but contract returns seconds, dividing Date.now() by 1,000 gives us the UNIX-time in seconds rather than miliseconds
+
+    if(JSON.parse(llamaData.cooldownHunger) > now) {
       this.llamaOnCooldown = true;
+      let remaining = (JSON.parse(llamaData.cooldownHunger) - now)/3600; // Dividing by 3,600 converts the seconds into hours
+      let remainingUnit = 'hours';
+      if(remaining < 1) {
+        if(remaining*60 > 1) {
+          remaining = remaining*60; // If the result of the sum converting seconds into hours returns something less than one, that means that the time left is less than an hour. We should show this time as minutes instead.
+          remainingUnit = 'minutes';
+        } else if(remaining*60 < 1) {
+          remaining = (remaining*60)*60; // Converts the minutes into seconds if there's less than a minute left.
+          remainingUnit = 'seconds';
+        }
+      }
+      this.cooldownText = Math.round(remaining * 10) / 10+' '+remainingUnit+' remaining';
     } else {
       this.llamaOnCooldown = false;
+      this.cooldownText = 'Your llama is hungry.';
     }
   }
 }

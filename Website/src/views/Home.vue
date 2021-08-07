@@ -3,7 +3,11 @@
     <div v-if='llamaCount == 0' class='flex center ' id='newPlayers'>
       <h1>Welcome to your llama farm! 🚀</h1>
       <h3>To get started, adopt a llama with the button below.</h3>
-      <button class='btn btn-primary mt20 width100' @click='feedLlama'>Adopt My Llama</button>
+      <button class='btn btn-primary mt20 width100' @click='adoptLlama'>Adopt My Llama</button>
+    </div>
+    <div v-if='llamaCount == -1' class='flex center ' id='newPlayers'>
+      <h1>Processing transaction... 🚀</h1>
+      <h3>This usually takes 30-80 seconds.</h3>
     </div>
     <div v-if='llamaCount > 0' class='flex center' id='oldPlayers'>
       <h1>Welcome back! 🥳</h1>
@@ -15,6 +19,7 @@
 
 <script>
 import Llama from '@/components/Llama.vue';
+
 import { ethers } from "ethers";
 
 export default {
@@ -34,8 +39,36 @@ export default {
     }
   },
   methods: {
-    feedLlama() {
-      this.$emit('feedLlama');
+    async adoptLlama() {
+      const self = this;
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      const contractAddress = '0xc2Df94666757bEb8c16385eF0187112395649c9C';
+      const contractAbi = ["function createFirstLlama() external returns(uint256)"];
+
+      const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+
+      const address = await signer.getAddress();
+
+      const tx = await contract.createFirstLlama();
+      const txHash = tx.hash;
+
+      console.log(tx);
+      if(tx) {
+        this.llamaCount = -1;
+      }
+
+      let txSatisfied = false;
+
+      while(txSatisfied == false) {
+        let txReciept = await provider.getTransactionReceipt(txHash);
+        if(txReciept && txReciept.blockNumber && txReciept.confirmations > 1) {
+          txSatisfied = true;
+          this.$router.push('/adopt/success');
+        }
+      }
     },
     async getLlamas() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -75,7 +108,7 @@ export default {
 
     console.log(provider);
     console.log(signer);
-    if(provider == null) {
+    if(signer == null) {
       this.$router.push('/');
     } else {
       this.getLlamas();
