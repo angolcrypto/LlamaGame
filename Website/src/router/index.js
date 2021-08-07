@@ -1,30 +1,24 @@
-import { createRouter, createWebHistory } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router";
 
-import Home from '@/views/Home'
-import Threads from '@/views/Threads'
-import Login from '@/views/Login'
+import Home from '@/views/Home';
+import Connect from '@/views/Connect';
 
 const routes = [
     {
-        path: '/',
-        name: 'Home',
+        path: '/home',
+        name: 'Manage Farm',
         component: Home
     },
     {
-      path: '/threads',
-      name: 'Threads',
-      component: Threads
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-},
-]
+      path: '/',
+      name: 'Connect Wallet',
+      component: Connect
+    },
+];
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes,
 })
 
-export default router
+export default router;

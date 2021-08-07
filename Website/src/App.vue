@@ -35,16 +35,21 @@ export default {
 
       await window.ethereum.send('eth_requestAccounts');
       this.provider = new ethers.providers.Web3Provider(window.ethereum);
-      this.signer = this.provider.getSigner()
+      this.signer = this.provider.getSigner();
 
       console.log(await this.signer.getAddress());
 
       this.buttons = [{"name":"Disconnect Wallet", "function":"disconnectWallet"}];
       this.locked = false;
+
+      this.$router.push('home');
     },
     disconnectWallet() {
       this.buttons = [{"name":"Connect Wallet", "function":"connectWallet"}];
       this.locked = true;
+      this.provider=null;
+      this.signer=null;
+      this.$router.push('/');
     }
   }
 }
