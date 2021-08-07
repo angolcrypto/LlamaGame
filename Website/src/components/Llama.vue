@@ -3,17 +3,23 @@
     <div class='image-side'>
       <img class='image' src='https://d1wo2tfj2enqpq.cloudfront.net/svgs/11.png' />
     </div>
-    <div class='stats-side'>
+    <div v-if='!transferActive' id='stats' class='stats-side'>
       <h1>Llama #{{llamaId}}</h1>
       <h3>Name: {{llamaName}}</h3>
       <h3>Level: {{llamaLevel}}</h3>
       <p style='display: inline-block;'>{{cooldownText}}</p>
       <br>
       <button :class="llamaOnCooldown ? 'btn btn-secondary' : 'btn btn-primary'" :disabled='llamaOnCooldown' @click='feedButton'>Feed</button>
-      <button class='btn btn-primary' data-toggle="modal" data-target="#transferModal" style='margin-left: 7px;' @click='sendButton'>Transfer</button>
+      <button class='btn btn-primary' data-toggle="modal" data-target="#transferModal" style='margin-left: 7px;' @click='toggleTransfer'>Transfer</button>
+    </div>
+    <div v-if='transferActive' id='transfer' class='stats-side'>
+      <h1>Transfer Llama</h1>
+      <h3>Llama #{{llamaId}}</h3>
+      <input style='margin-bottom: 9px;' type="text" id='receiver-address' class="form-control" v-model='toAddress' title='Ethereum Address' placeholder="Receiver" aria-label="Receiver" aria-describedby="addon-wrapping">
+      <button class='btn btn-danger' data-toggle="modal" data-target="#transferModal" style='margin-right: 7px;' @click='toggleTransfer'>Cancel</button>
+      <button :class="'btn btn-success'" @click='sendButton'>Send</button>
     </div>
   </div>
-  <TransferModal :id='llamaId'/>
 </template>
 
 <script>
@@ -30,12 +36,14 @@ export default {
   },
   data() {
     return {
+      toAddress: '',
       llamaName: String,
       llamaId: Number,
       llamaLevel: Number,
       llamaOnCooldown: Boolean,
       cooldownText: String,
       style: String,
+      transferActive: Boolean,
     }
   },
   methods: {
@@ -53,11 +61,30 @@ export default {
       this.cooldownText = '6 hours remaining';
       this.llamaOnCooldown = true;
       this.llamaLevel = this.llamaLevel + 1;
-    }
+    },
+    toggleTransfer() {
+      this.transferActive=!this.transferActive;
+    },
+    async sendButton() {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+
+      const contractAddress = '0xc2Df94666757bEb8c16385eF0187112395649c9C';
+      const contractAbi = ["function safeTransferFrom(address from, address to, uint256 tokenId) external"];
+
+      const contract = new ethers.Contract(contractAddress, contractAbi, signer);
+
+      const address = await signer.getAddress();
+
+      contract.safeTransferFrom(address, this.toAddress, this.ida);
+      
+      this.$el.parentNode.removeChild(this.$el);
+    },
   },
   async mounted() {
 
     // Unrelated to smart-contracts
+    this.transferActive=false;
 
 
     // Smart Contract Stuff

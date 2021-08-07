@@ -1,24 +1,29 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Home from '@/views/Home';
-import Connect from '@/views/Connect';
+import Redirect from '@/views/Redirect';
 import Success from '@/views/Success';
 
 const routes = [
     {
-        path: '/home',
+        path: '/farm',
         name: 'Manage Farm',
         component: Home
     },
     {
       path: '/',
-      name: 'Connect Wallet',
-      component: Connect
+      name: 'LlamaFarm',
+      component: Redirect
     },
     {
       path: '/adopt/success',
       name: 'Adoption Successful',
       component: Success
+    },
+    {
+      path: '/home',
+      name: 'LlamaFarm',
+      component: Redirect
     },
 ];
 

@@ -42,15 +42,17 @@ export default {
       this.buttons = [{"name":"Disconnect Wallet", "function":"disconnectWallet"}];
       this.locked = false;
 
-      this.$router.push('home');
+      this.$router.push('/home');
     },
     disconnectWallet() {
       this.buttons = [{"name":"Connect Wallet", "function":"connectWallet"}];
       this.locked = true;
       this.provider=null;
       this.signer=null;
-      this.$router.push('/');
-    }
+    },
+  },
+  created() {
+    this.connectWallet();
   }
 }
 </script>
